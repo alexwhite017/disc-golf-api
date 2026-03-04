@@ -87,7 +87,7 @@ describe('PUT /api/rounds/{round}/scores/{score}', function () {
         $course = Course::factory()->create();
         $round = Round::factory()->create(['user_id' => $user->id, 'course_id' => $course->id]);
         $hole = Hole::factory()->create(['course_id' => $course->id, 'number' => 1]);
-        $score = Score::factory()->create(['round_id' => $round->id, 'hole_id' => $hole->id, 'strokes' => 5]);
+        $score = Score::factory()->create(['round_id' => $round->id, 'hole_id' => $hole->id, 'user_id' => $user->id, 'strokes' => 5]);
 
         $this->actingAs($user)
             ->putJson("/api/rounds/{$round->id}/scores/{$score->id}", ['strokes' => 3])
@@ -101,7 +101,7 @@ describe('PUT /api/rounds/{round}/scores/{score}', function () {
         $course = Course::factory()->create();
         $round = Round::factory()->create(['user_id' => $other->id, 'course_id' => $course->id]);
         $hole = Hole::factory()->create(['course_id' => $course->id, 'number' => 1]);
-        $score = Score::factory()->create(['round_id' => $round->id, 'hole_id' => $hole->id, 'strokes' => 5]);
+        $score = Score::factory()->create(['round_id' => $round->id, 'hole_id' => $hole->id, 'user_id' => $other->id, 'strokes' => 5]);
 
         $this->actingAs($user)
             ->putJson("/api/rounds/{$round->id}/scores/{$score->id}", ['strokes' => 3])
@@ -114,7 +114,7 @@ describe('PUT /api/rounds/{round}/scores/{score}', function () {
         $round = Round::factory()->create(['user_id' => $user->id, 'course_id' => $course->id]);
         $otherRound = Round::factory()->create(['user_id' => $user->id]);
         $hole = Hole::factory()->create(['course_id' => $course->id, 'number' => 1]);
-        $score = Score::factory()->create(['round_id' => $otherRound->id, 'hole_id' => $hole->id, 'strokes' => 5]);
+        $score = Score::factory()->create(['round_id' => $otherRound->id, 'hole_id' => $hole->id, 'user_id' => $user->id, 'strokes' => 5]);
 
         $this->actingAs($user)
             ->putJson("/api/rounds/{$round->id}/scores/{$score->id}", ['strokes' => 3])

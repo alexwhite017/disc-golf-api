@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Hole;
 use App\Models\Round;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ScoreFactory extends Factory
@@ -13,6 +14,7 @@ class ScoreFactory extends Factory
         return [
             'round_id' => Round::factory(),
             'hole_id' => Hole::factory(),
+            'user_id' => User::factory(),
             'strokes' => fake()->numberBetween(1, 8),
         ];
     }

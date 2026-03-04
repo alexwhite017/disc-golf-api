@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -45,6 +46,16 @@ class User extends Authenticatable
     public function rounds(): HasMany
     {
         return $this->hasMany(Round::class);
+    }
+
+    public function roundsAsPlayer(): BelongsToMany
+    {
+        return $this->belongsToMany(Round::class, 'round_players')->withTimestamps();
+    }
+
+    public function scores(): HasMany
+    {
+        return $this->hasMany(Score::class);
     }
 
     public function discs(): HasMany

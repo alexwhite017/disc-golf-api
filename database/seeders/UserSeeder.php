@@ -7,6 +7,7 @@ use App\Models\Round;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -79,13 +80,14 @@ class UserSeeder extends Seeder
                     'course_id' => $course->id,
                     'played_at' => $date,
                 ]);
+                DB::table('round_players')->insert(['round_id' => $round->id, 'user_id' => $alex->id, 'created_at' => now(), 'updated_at' => now()]);
 
                 foreach ($holes as $j => $hole) {
                     $offset = $alexOffsets[$j % count($alexOffsets)];
                     // Small variation per round
                     $variation = rand(-1, 1);
                     $strokes = max(1, $hole->par + $offset + ($i % 2 === 0 ? $variation : 0));
-                    $round->scores()->create(['hole_id' => $hole->id, 'strokes' => $strokes]);
+                    $round->scores()->create(['hole_id' => $hole->id, 'user_id' => $alex->id, 'strokes' => $strokes]);
                 }
             }
 
@@ -96,11 +98,12 @@ class UserSeeder extends Seeder
                     'course_id' => $course->id,
                     'played_at' => Carbon::parse($date)->addDay()->format('Y-m-d'),
                 ]);
+                DB::table('round_players')->insert(['round_id' => $round->id, 'user_id' => $jordan->id, 'created_at' => now(), 'updated_at' => now()]);
 
                 foreach ($holes as $j => $hole) {
                     $offset = $jordanOffsets[$j % count($jordanOffsets)];
                     $strokes = max(1, $hole->par + $offset);
-                    $round->scores()->create(['hole_id' => $hole->id, 'strokes' => $strokes]);
+                    $round->scores()->create(['hole_id' => $hole->id, 'user_id' => $jordan->id, 'strokes' => $strokes]);
                 }
             }
         }

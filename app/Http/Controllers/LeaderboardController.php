@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\Round;
-use App\Models\Score;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -13,8 +11,12 @@ class LeaderboardController extends Controller
     public function index(): JsonResponse
     {
         $leaderboard = DB::table('users')
-            ->join('rounds', 'users.id', '=', 'rounds.user_id')
-            ->join('scores', 'rounds.id', '=', 'scores.round_id')
+            ->join('round_players', 'users.id', '=', 'round_players.user_id')
+            ->join('rounds', 'round_players.round_id', '=', 'rounds.id')
+            ->join('scores', function ($join) {
+                $join->on('scores.round_id', '=', 'rounds.id')
+                     ->on('scores.user_id', '=', 'users.id');
+            })
             ->join('holes', 'scores.hole_id', '=', 'holes.id')
             ->select(
                 'users.id as user_id',
@@ -35,8 +37,12 @@ class LeaderboardController extends Controller
     public function show(Course $course): JsonResponse
     {
         $leaderboard = DB::table('users')
-            ->join('rounds', 'users.id', '=', 'rounds.user_id')
-            ->join('scores', 'rounds.id', '=', 'scores.round_id')
+            ->join('round_players', 'users.id', '=', 'round_players.user_id')
+            ->join('rounds', 'round_players.round_id', '=', 'rounds.id')
+            ->join('scores', function ($join) {
+                $join->on('scores.round_id', '=', 'rounds.id')
+                     ->on('scores.user_id', '=', 'users.id');
+            })
             ->join('holes', 'scores.hole_id', '=', 'holes.id')
             ->where('rounds.course_id', $course->id)
             ->select(

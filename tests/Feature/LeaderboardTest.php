@@ -19,11 +19,11 @@ describe('GET /api/leaderboard', function () {
 
         // Better player: 2 strokes on par 3 = -1
         $round1 = Round::factory()->create(['user_id' => $better->id, 'course_id' => $course->id]);
-        $round1->scores()->create(['hole_id' => $hole->id, 'strokes' => 2]);
+        $round1->scores()->create(['hole_id' => $hole->id, 'user_id' => $better->id, 'strokes' => 2]);
 
         // Worse player: 5 strokes on par 3 = +2
         $round2 = Round::factory()->create(['user_id' => $worse->id, 'course_id' => $course->id]);
-        $round2->scores()->create(['hole_id' => $hole->id, 'strokes' => 5]);
+        $round2->scores()->create(['hole_id' => $hole->id, 'user_id' => $worse->id, 'strokes' => 5]);
 
         $response = $this->getJson('/api/leaderboard')->assertOk();
 
@@ -48,7 +48,7 @@ describe('GET /api/leaderboard/{course}', function () {
 
         $user = User::factory()->create();
         $round = Round::factory()->create(['user_id' => $user->id, 'course_id' => $course->id]);
-        $round->scores()->create(['hole_id' => $hole->id, 'strokes' => 3]);
+        $round->scores()->create(['hole_id' => $hole->id, 'user_id' => $user->id, 'strokes' => 3]);
 
         // Round on other course — should not appear
         Round::factory()->create(['user_id' => $user->id, 'course_id' => $otherCourse->id]);

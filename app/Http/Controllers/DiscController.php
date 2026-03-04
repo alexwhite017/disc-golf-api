@@ -17,7 +17,7 @@ class DiscController extends Controller
             ->discs()
             ->when($request->has('is_in_bag'), fn ($q) => $q->where('is_in_bag', $request->boolean('is_in_bag')))
             ->when($request->type, fn ($q) => $q->where('type', $request->type))
-            ->paginate($request->integer('per_page', 15));
+            ->paginate(min($request->integer('per_page', 15), 100));
 
         return DiscResource::collection($discs);
     }
@@ -32,7 +32,7 @@ class DiscController extends Controller
             'type' => 'required|in:driver,fairway_driver,mid_range,putter',
             'weight_grams' => 'nullable|numeric|min:100|max:200',
             'color' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:2000',
             'is_in_bag' => 'boolean',
         ]);
 
@@ -58,7 +58,7 @@ class DiscController extends Controller
             'type' => 'sometimes|required|in:driver,fairway_driver,mid_range,putter',
             'weight_grams' => 'nullable|numeric|min:100|max:200',
             'color' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:2000',
             'is_in_bag' => 'boolean',
         ]);
 

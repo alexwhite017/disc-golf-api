@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Round extends Model
@@ -40,19 +41,26 @@ class Round extends Model
         return $this->hasMany(Score::class);
     }
 
-    public function getTotalScoreAttribute(): int
+    public function players(): BelongsToMany
     {
-        return $this->scores->sum('strokes');
+        return $this->belongsToMany(User::class, 'round_players')->withTimestamps();
     }
 
-    public function getScoreVsParAttribute(): ?int
+    public function totalScoreForUser(int $userId): int
     {
-        if ($this->scores->isEmpty()) {
+        return $this->scores->where('user_id', $userId)->sum('strokes');
+    }
+
+    public function scoreVsParForUser(int $userId): ?int
+    {
+        $userScores = $this->scores->where('user_id', $userId);
+
+        if ($userScores->isEmpty()) {
             return null;
         }
 
-        $totalStrokes = $this->scores->sum('strokes');
-        $totalPar = $this->scores->sum(fn ($score) => $score->hole->par ?? 0);
+        $totalStrokes = $userScores->sum('strokes');
+        $totalPar = $userScores->sum(fn ($score) => $score->hole->par ?? 0);
 
         return $totalPar > 0 ? $totalStrokes - $totalPar : null;
     }

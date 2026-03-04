@@ -100,14 +100,15 @@ describe('GET /api/rounds/{round}', function () {
         $round = Round::factory()->create(['user_id' => $user->id, 'course_id' => $course->id]);
 
         $hole = $course->holes()->create(['number' => 1, 'par' => 3]);
-        $round->scores()->create(['hole_id' => $hole->id, 'strokes' => 4]);
+        $round->scores()->create(['hole_id' => $hole->id, 'user_id' => $user->id, 'strokes' => 4]);
 
         $response = $this->actingAs($user)
             ->getJson("/api/rounds/{$round->id}")
             ->assertOk();
 
-        expect($response->json('data.total_score'))->toBe(4)
-            ->and($response->json('data.score_vs_par'))->toBe(1); // 4 strokes - par 3 = +1
+        $userId = (string) $user->id;
+        expect($response->json("data.player_totals.{$userId}.total_score"))->toBe(4)
+            ->and($response->json("data.player_totals.{$userId}.score_vs_par"))->toBe(1); // 4 strokes - par 3 = +1
     });
 });
 

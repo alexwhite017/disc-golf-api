@@ -13,6 +13,7 @@ class Score extends Model
     protected $fillable = [
         'round_id',
         'hole_id',
+        'user_id',
         'strokes',
     ];
 
@@ -31,5 +32,10 @@ class Score extends Model
     public function hole(): BelongsTo
     {
         return $this->belongsTo(Hole::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -13,6 +13,7 @@ class ScoreResource extends JsonResource
             'id' => $this->id,
             'round_id' => $this->round_id,
             'hole_id' => $this->hole_id,
+            'user_id' => $this->user_id,
             'strokes' => $this->strokes,
             'hole' => new HoleResource($this->whenLoaded('hole')),
         ];

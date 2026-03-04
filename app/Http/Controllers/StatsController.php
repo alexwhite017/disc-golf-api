@@ -12,23 +12,23 @@ class StatsController extends Controller
     {
         $user = $request->user();
 
-        $roundStats = DB::table('rounds')
-            ->join('scores', 'rounds.id', '=', 'scores.round_id')
+        $roundStats = DB::table('scores')
+            ->join('rounds', 'scores.round_id', '=', 'rounds.id')
             ->join('holes', 'scores.hole_id', '=', 'holes.id')
-            ->where('rounds.user_id', $user->id)
+            ->where('scores.user_id', $user->id)
             ->select(
-                DB::raw('COUNT(DISTINCT rounds.id) as rounds_played'),
+                DB::raw('COUNT(DISTINCT scores.round_id) as rounds_played'),
                 DB::raw('COUNT(scores.id) as holes_played'),
                 DB::raw('SUM(scores.strokes) as total_strokes'),
                 DB::raw('SUM(holes.par) as total_par'),
             )
             ->first();
 
-        $bestRound = DB::table('rounds')
-            ->join('scores', 'rounds.id', '=', 'scores.round_id')
+        $bestRound = DB::table('scores')
+            ->join('rounds', 'scores.round_id', '=', 'rounds.id')
             ->join('holes', 'scores.hole_id', '=', 'holes.id')
             ->join('courses', 'rounds.course_id', '=', 'courses.id')
-            ->where('rounds.user_id', $user->id)
+            ->where('scores.user_id', $user->id)
             ->select(
                 'rounds.id',
                 'rounds.played_at',
@@ -41,9 +41,8 @@ class StatsController extends Controller
             ->first();
 
         $scoreDistribution = DB::table('scores')
-            ->join('rounds', 'scores.round_id', '=', 'rounds.id')
             ->join('holes', 'scores.hole_id', '=', 'holes.id')
-            ->where('rounds.user_id', $user->id)
+            ->where('scores.user_id', $user->id)
             ->select(
                 DB::raw('SUM(CASE WHEN scores.strokes <= holes.par - 2 THEN 1 ELSE 0 END) as eagles_or_better'),
                 DB::raw('SUM(CASE WHEN scores.strokes = holes.par - 1 THEN 1 ELSE 0 END) as birdies'),
@@ -53,13 +52,14 @@ class StatsController extends Controller
             )
             ->first();
 
-        $favoriteCourse = DB::table('rounds')
+        $favoriteCourse = DB::table('round_players')
+            ->join('rounds', 'round_players.round_id', '=', 'rounds.id')
             ->join('courses', 'rounds.course_id', '=', 'courses.id')
-            ->where('rounds.user_id', $user->id)
+            ->where('round_players.user_id', $user->id)
             ->select(
                 'courses.id',
                 'courses.name',
-                DB::raw('COUNT(rounds.id) as rounds_played'),
+                DB::raw('COUNT(round_players.round_id) as rounds_played'),
             )
             ->groupBy('courses.id', 'courses.name')
             ->orderByDesc('rounds_played')

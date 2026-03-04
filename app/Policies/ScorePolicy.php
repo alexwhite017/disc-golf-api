@@ -10,16 +10,16 @@ class ScorePolicy
 {
     public function create(User $user, Round $round): bool
     {
-        return $user->id === $round->user_id;
+        return $round->players()->where('user_id', $user->id)->exists();
     }
 
     public function update(User $user, Score $score): bool
     {
-        return $user->id === $score->round->user_id;
+        return $user->id === $score->user_id;
     }
 
     public function delete(User $user, Score $score): bool
     {
-        return $user->id === $score->round->user_id;
+        return $user->id === $score->user_id;
     }
 }

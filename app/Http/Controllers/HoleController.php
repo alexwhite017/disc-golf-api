@@ -27,7 +27,7 @@ class HoleController extends Controller
             'number' => 'required|integer|min:1|max:36',
             'par' => 'required|integer|in:3,4,5',
             'distance_feet' => 'nullable|integer|min:0',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:2000',
         ]);
 
         $hole = $course->holes()->create($validated);
@@ -52,7 +52,7 @@ class HoleController extends Controller
             'number' => 'sometimes|required|integer|min:1|max:36',
             'par' => 'sometimes|required|integer|in:3,4,5',
             'distance_feet' => 'nullable|integer|min:0',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:2000',
         ]);
 
         $hole->update($validated);

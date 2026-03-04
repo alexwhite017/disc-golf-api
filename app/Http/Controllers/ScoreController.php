@@ -8,6 +8,7 @@ use App\Models\Score;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 
 class ScoreController extends Controller
 {
@@ -16,12 +17,12 @@ class ScoreController extends Controller
         $this->authorize('create', [Score::class, $round]);
 
         $validated = $request->validate([
-            'hole_id' => 'required|exists:holes,id',
+            'hole_id' => ['required', Rule::exists('holes', 'id')->where('course_id', $round->course_id)],
             'strokes' => 'required|integer|min:1|max:99',
         ]);
 
         $score = $round->scores()->updateOrCreate(
-            ['hole_id' => $validated['hole_id']],
+            ['hole_id' => $validated['hole_id'], 'user_id' => $request->user()->id],
             ['strokes' => $validated['strokes']]
         );
 

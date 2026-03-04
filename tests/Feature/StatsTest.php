@@ -33,13 +33,13 @@ describe('GET /api/me/stats', function () {
 
         // Round 1: 4 + 5 = 9 strokes, par 7, vs par = +2
         $round1 = Round::factory()->create(['user_id' => $user->id, 'course_id' => $course->id, 'played_at' => '2024-05-01']);
-        $round1->scores()->create(['hole_id' => $hole1->id, 'strokes' => 4]);
-        $round1->scores()->create(['hole_id' => $hole2->id, 'strokes' => 5]);
+        $round1->scores()->create(['hole_id' => $hole1->id, 'user_id' => $user->id, 'strokes' => 4]);
+        $round1->scores()->create(['hole_id' => $hole2->id, 'user_id' => $user->id, 'strokes' => 5]);
 
         // Round 2: 3 + 4 = 7 strokes, par 7, vs par = 0
         $round2 = Round::factory()->create(['user_id' => $user->id, 'course_id' => $course->id, 'played_at' => '2024-06-01']);
-        $round2->scores()->create(['hole_id' => $hole1->id, 'strokes' => 3]);
-        $round2->scores()->create(['hole_id' => $hole2->id, 'strokes' => 4]);
+        $round2->scores()->create(['hole_id' => $hole1->id, 'user_id' => $user->id, 'strokes' => 3]);
+        $round2->scores()->create(['hole_id' => $hole2->id, 'user_id' => $user->id, 'strokes' => 4]);
 
         $response = $this->actingAs($user)->getJson('/api/me/stats')->assertOk();
 
@@ -64,11 +64,11 @@ describe('GET /api/me/stats', function () {
         $hole4 = Hole::factory()->create(['course_id' => $course->id, 'number' => 4, 'par' => 3]);
         $hole5 = Hole::factory()->create(['course_id' => $course->id, 'number' => 5, 'par' => 3]);
 
-        $round->scores()->create(['hole_id' => $hole->id, 'strokes' => 1]);   // eagle
-        $round->scores()->create(['hole_id' => $hole2->id, 'strokes' => 2]);  // birdie
-        $round->scores()->create(['hole_id' => $hole3->id, 'strokes' => 3]);  // par
-        $round->scores()->create(['hole_id' => $hole4->id, 'strokes' => 4]);  // bogey
-        $round->scores()->create(['hole_id' => $hole5->id, 'strokes' => 5]);  // double bogey
+        $round->scores()->create(['hole_id' => $hole->id, 'user_id' => $user->id, 'strokes' => 1]);   // eagle
+        $round->scores()->create(['hole_id' => $hole2->id, 'user_id' => $user->id, 'strokes' => 2]);  // birdie
+        $round->scores()->create(['hole_id' => $hole3->id, 'user_id' => $user->id, 'strokes' => 3]);  // par
+        $round->scores()->create(['hole_id' => $hole4->id, 'user_id' => $user->id, 'strokes' => 4]);  // bogey
+        $round->scores()->create(['hole_id' => $hole5->id, 'user_id' => $user->id, 'strokes' => 5]);  // double bogey
 
         $response = $this->actingAs($user)->getJson('/api/me/stats')->assertOk();
 
@@ -102,9 +102,9 @@ describe('GET /api/me/stats', function () {
         $hole2 = Hole::factory()->create(['course_id' => $course2->id, 'number' => 1, 'par' => 3]);
 
         Round::where('course_id', $course1->id)->get()
-            ->each(fn ($r) => $r->scores()->create(['hole_id' => $hole1->id, 'strokes' => 3]));
+            ->each(fn ($r) => $r->scores()->create(['hole_id' => $hole1->id, 'user_id' => $user->id, 'strokes' => 3]));
         Round::where('course_id', $course2->id)->get()
-            ->each(fn ($r) => $r->scores()->create(['hole_id' => $hole2->id, 'strokes' => 3]));
+            ->each(fn ($r) => $r->scores()->create(['hole_id' => $hole2->id, 'user_id' => $user->id, 'strokes' => 3]));
 
         $response = $this->actingAs($user)->getJson('/api/me/stats')->assertOk();
 
@@ -121,7 +121,7 @@ describe('GET /api/me/stats', function () {
         // Other user has 10 rounds
         $rounds = Round::factory()->count(10)->create(['user_id' => $other->id, 'course_id' => $course->id]);
         foreach ($rounds as $round) {
-            $round->scores()->create(['hole_id' => $hole->id, 'strokes' => 3]);
+            $round->scores()->create(['hole_id' => $hole->id, 'user_id' => $other->id, 'strokes' => 3]);
         }
 
         $response = $this->actingAs($user)->getJson('/api/me/stats')->assertOk();
